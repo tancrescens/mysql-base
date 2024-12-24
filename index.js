@@ -7,23 +7,35 @@ const helpers = require('handlebars-helpers');
 
 let app = express();
 
-// app.set('view engine', 'hbs');
-// app.use(express.static('public'));
-// app.use(express.urlencoded({extended:false}));
+app.set('view engine', 'hbs');
+app.use(express.static('public'));
+app.use(express.urlencoded({extended:false}));
 
-// wax.on(hbs.handlebars);
-// wax.setLayoutPath('./views/layouts');
+wax.on(hbs.handlebars);
+wax.setLayoutPath('./views/layouts');
 
+// tell handlebars-helpers where to find handlebars
+helpers({
+    'handlebars': hbs.handlebars
+})
 
-// // tell handlebars-helpers where to find handlebars
-// helpers({
-//     'handlebars': hbs.handlebars
-// })
+let connection;
 
-app.get('/', (req,res) => {
-    res.send('Hello, World!');
-});
+async function main() {
+    connection = await createConnection({
+        'host': process.env.DB_HOST,
+        'user': process.env.DB_USER,
+        'database': process.env.DB_NAME,
+        'password': process.env.DB_PASSWORD
+    })
 
-app.listen(3000, ()=>{
-    console.log('Server is running')
-});
+    app.get('/', (req,res) => {
+        res.send('Hello, World!');
+    });
+
+    app.listen(3000, ()=>{
+        console.log('Server is running')
+    });
+}
+
+main();
