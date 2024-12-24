@@ -4,6 +4,7 @@ const hbs = require('hbs');
 const wax = require('wax-on');
 // require in handlebars and their helpers
 const helpers = require('handlebars-helpers');
+const { createConnection } = require('mysql2/promise');
 
 let app = express();
 
