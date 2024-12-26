@@ -58,7 +58,15 @@ async function main() {
             "companies" : companies
         });
     });
-
+    app.post('/customers/create', async(req,res)=>{
+        let {first_name, last_name, rating, company_id} = req.body;
+        let query = 'INSERT INTO Customers (first_name, last_name, rating, company_id) VALUES (?, ?, ?, ?)';
+        let bindings = [first_name, last_name, rating, company_id];
+        await connection.execute(query, bindings);
+        res.redirect('/customers');
+    })
+    
+    // ROUTE: Update Customer's details in Customers DB
     
     // END
     app.listen(3000, ()=>{
