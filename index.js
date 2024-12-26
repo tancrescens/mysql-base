@@ -47,13 +47,11 @@ async function main() {
         });        res.render('customers/index', {
             'customers': customers
         })
-        console.log(customers)
     });
     
     // ROUTE: create customers in Customers DB
     app.get("/customers/create", async (req,res)=>{
         let [companies] = await connection.execute(`SELECT * from Companies`);
-        console.log(companies)
         res.render("customers/add", {
             "companies" : companies
         });
@@ -67,6 +65,22 @@ async function main() {
     })
     
     // ROUTE: Update Customer's details in Customers DB
+    app.get('/customers/:customer_id/edit', async (req, res) => {
+        let [customers] = await connection.execute('SELECT * from Customers WHERE customer_id = ?', [req.params.customer_id]);
+        let [companies] = await connection.execute('SELECT * from Companies');
+        let customer = customers[0];
+        res.render('customers/edit', {
+            'customer': customer,
+            'companies': companies
+        })
+    })
+    app.post('/customers/:customer_id/edit', async (req, res) => {
+        let {first_name, last_name, rating, company_id} = req.body;
+        let query = 'UPDATE Customers SET first_name=?, last_name=?, rating=?, company_id=? WHERE customer_id=?';
+        let bindings = [first_name, last_name, rating, company_id, req.params.customer_id];
+        await connection.execute(query, bindings);
+        res.redirect('/customers');
+    })
     
     // END
     app.listen(3000, ()=>{
