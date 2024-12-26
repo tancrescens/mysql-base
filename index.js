@@ -52,7 +52,8 @@ async function main() {
     
     // ROUTE: create customers in Customers DB
     app.get("/customers/create", async (req,res)=>{
-        let companies = await connection.execute(`SELECT * from Companies`);
+        let [companies] = await connection.execute(`SELECT * from Companies`);
+        console.log(companies)
         res.render("customers/add", {
             "companies" : companies
         });
