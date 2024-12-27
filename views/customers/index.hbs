@@ -14,7 +14,11 @@
         <td>{{Customers.last_name}}</td>
         <td>{{Customers.rating}}</td>
         <td>{{Companies.name}}</td>
-        <td><a class="btn btn-primary" href="/customers/{{Customers.customer_id}}/edit">Edit</a></td>
+        <td>
+            <a class="btn btn-primary" href="/customers/{{Customers.customer_id}}/edit">Edit</a>
+            <a class="btn btn-danger" href="/customers/{{Customers.customer_id}}/delete">Delete</a>
+        </td>
+        <td></td>
     </tr>
     {{/each}}
 </table>
