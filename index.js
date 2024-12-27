@@ -50,19 +50,43 @@ async function main() {
     });
     
     // ROUTE: create customers in Customers DB
-    app.get("/customers/create", async (req,res)=>{
-        let [companies] = await connection.execute(`SELECT * from Companies`);
-        res.render("customers/add", {
-            "companies" : companies
-        });
-    });
+    // app.get("/customers/create", async (req,res)=>{
+    //     let [companies] = await connection.execute(`SELECT * from Companies`);
+    //     res.render("customers/add", {
+    //         "companies" : companies
+    //     });
+    // });
+    // app.post('/customers/create', async(req,res)=>{
+    //     let {first_name, last_name, rating, company_id} = req.body;
+    //     let query = 'INSERT INTO Customers (first_name, last_name, rating, company_id) VALUES (?, ?, ?, ?)';
+    //     let bindings = [first_name, last_name, rating, company_id];
+    //     await connection.execute(query, bindings);
+    //     res.redirect('/customers');
+    // })
+    app.get('/customers/create', async(req,res)=>{
+        let [companies] = await connection.execute('SELECT * from Companies');
+        let [employees] = await connection.execute('SELECT * from Employees');
+        res.render('customers/add', {
+            'companies': companies,
+            'employees': employees
+        })
+    })
     app.post('/customers/create', async(req,res)=>{
-        let {first_name, last_name, rating, company_id} = req.body;
+        let {first_name, last_name, rating, company_id, employee_id} = req.body;
         let query = 'INSERT INTO Customers (first_name, last_name, rating, company_id) VALUES (?, ?, ?, ?)';
         let bindings = [first_name, last_name, rating, company_id];
-        await connection.execute(query, bindings);
+        let [result] = await connection.execute(query, bindings);
+    
+        let newCustomerId = result.insertId;
+        for (let id of employee_id) {
+            let query = 'INSERT INTO EmployeeCustomer (employee_id, customer_id) VALUES (?, ?)';
+            let bindings = [id, newCustomerId];
+            await connection.execute(query, bindings);
+        }
+    
         res.redirect('/customers');
     })
+    
     
     // ROUTE: Update Customer's details in Customers DB
     app.get('/customers/:customer_id/edit', async (req, res) => {
