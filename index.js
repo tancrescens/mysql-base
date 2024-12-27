@@ -142,21 +142,27 @@ async function main() {
     // ROUTE: Delete Customer
     app.get('/customers/:customer_id/delete', async function (req, res) {
         const customer_id = req.params.customer_id;
-        try {
-            // display a confirmation form
-            const [customers] = await connection.execute(
-                "SELECT * FROM Customers WHERE customer_id =?", [customer_id]
-            );
-            const customer = customers[0];
+        // NOTE: To delete customers we have to delete all their relationship first
+        const [relatedEmployees] = await connection.execute(
+            "SELECT * FROM EmployeeCustomer WHERE customer_id =?",
+            [customer_id]);
 
-            res.render('customers/delete', {
-                customer
-            });
-        } catch (e) {
-            res.render("errors", {
-                "errorMessage": "Unable to get Customer information"
+        if (relatedEmployees.length > 0) {
+            res.render('errors', {
+                'errorMessage': "There are still employees serving this customers, hence we cannot delete"
             })
+            return;
         }
+
+        // display a confirmation form if there are no existing employees serving selected customer
+        const [customers] = await connection.execute(
+            "SELECT * FROM Customers WHERE customer_id = ?", [customer_id]
+        );
+        const customer = customers[0];
+
+        res.render('customers/delete', {
+            customer
+        });
     });
     app.post('/customers/:customer_id/delete', async function (req, res) {
         const customer_id = req.params.customer_id;
