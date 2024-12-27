@@ -18,10 +18,19 @@
         <label>Companies</label>
         <select name="company_id" class="form-control">
             {{#each companies}}
-                <option value="{{this.company_id}}" 
-                {{#eq this.company_id ../customer.company_id}}selected{{/eq}}>
-                    {{this.name}}
-                </option>
+            <option value="{{this.company_id}}" {{#eq this.company_id ../customer.company_id}}selected{{/eq}}>
+                {{this.name}}
+            </option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Employees</label>
+        <select name="employee_id" class="form-control" multiple>
+            {{#each employees}}
+            <option value="{{employee_id}}" {{#inArray ../relatedEmployees employee_id }}selected{{/inArray}}>
+                {{first_name}} {{last_name}}
+            </option>
             {{/each}}
         </select>
     </div>

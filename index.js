@@ -89,22 +89,56 @@ async function main() {
     
     
     // ROUTE: Update Customer's details in Customers DB
+    // app.get('/customers/:customer_id/edit', async (req, res) => {
+    //     let [customers] = await connection.execute('SELECT * from Customers WHERE customer_id = ?', [req.params.customer_id]);
+    //     let [companies] = await connection.execute('SELECT * from Companies');
+    //     let customer = customers[0];
+    //     res.render('customers/edit', {
+    //         'customer': customer,
+    //         'companies': companies
+    //     })
+    // })
+    // app.post('/customers/:customer_id/edit', async (req, res) => {
+    //     let {first_name, last_name, rating, company_id} = req.body;
+    //     let query = 'UPDATE Customers SET first_name=?, last_name=?, rating=?, company_id=? WHERE customer_id=?';
+    //     let bindings = [first_name, last_name, rating, company_id, req.params.customer_id];
+    //     await connection.execute(query, bindings);
+    //     res.redirect('/customers');
+    // })
     app.get('/customers/:customer_id/edit', async (req, res) => {
+        let [employees] = await connection.execute('SELECT * from Employees');
         let [customers] = await connection.execute('SELECT * from Customers WHERE customer_id = ?', [req.params.customer_id]);
         let [companies] = await connection.execute('SELECT * from Companies');
+        let [employeeCustomers] = await connection.execute('SELECT * from EmployeeCustomer WHERE customer_id = ?', [req.params.customer_id]);
+    
         let customer = customers[0];
+        let relatedEmployees = employeeCustomers.map(ec => ec.employee_id);
+    
         res.render('customers/edit', {
             'customer': customer,
-            'companies': companies
+            'employees': employees,
+            'companies': companies,
+            'relatedEmployees': relatedEmployees
         })
-    })
+    });
     app.post('/customers/:customer_id/edit', async (req, res) => {
-        let {first_name, last_name, rating, company_id} = req.body;
+        let {first_name, last_name, rating, company_id, employee_id} = req.body;
+    
         let query = 'UPDATE Customers SET first_name=?, last_name=?, rating=?, company_id=? WHERE customer_id=?';
         let bindings = [first_name, last_name, rating, company_id, req.params.customer_id];
         await connection.execute(query, bindings);
+    
+        await connection.execute('DELETE FROM EmployeeCustomer WHERE customer_id = ?', [req.params.customer_id]);
+    
+        for (let id of employee_id) {
+            let query = 'INSERT INTO EmployeeCustomer (employee_id, customer_id) VALUES (?, ?)';
+            let bindings = [id, req.params.customer_id];
+            await connection.execute(query, bindings);
+        }
+    
         res.redirect('/customers');
-    })
+    });
+    
     
     // END
     app.listen(3000, ()=>{
