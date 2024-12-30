@@ -31,38 +31,39 @@ async function main() {
     });
 
     // ROUTE: Default
-    app.get('/', (req, res) => {
-        res.send('Hello, World!');
+    app.get('/', async (req, res) => {
+        
+        res.render('customers/index')
     });
 
-    // ROUTE: Render one row / customer
+    // ROUTE: Render customers
     app.get('/customers', async (req, res) => {
-        const [customers] = await connection.execute({
-            'sql': `
-            SELECT * from Customers
-                JOIN Companies ON Customers.company_id = Companies.company_id;
-            `,
-            nestTables: true
+        let query = `SELECT * FROM Customers JOIN Companies ON Companies.company_id = Customers.company_id WHERE 1`;
+        let bindings = [];
+        const first_name = req.query.first_name;
+        const last_name = req.query.last_name;
 
-        }); res.render('customers/index', {
-            'customers': customers
+        if(first_name){
+            query += ` AND first_name LIKE ?`
+            bindings.push(`%` + first_name + `%`);
+        }
+        if(last_name){
+            query += ` AND last_name LIKE ?`
+            bindings.push(`%` + last_name + `%`);
+        }
+
+        const [customers] = await connection.execute({
+            'sql': query,
+            nestTables: true
+        }, bindings);
+        
+        res.render('customers/customers', {
+            'customers': customers,
+            'searchTerms': req.query
         })
     });
 
-    // ROUTE: create customers in Customers DB
-    // app.get("/customers/create", async (req,res)=>{
-    //     let [companies] = await connection.execute(`SELECT * from Companies`);
-    //     res.render("customers/add", {
-    //         "companies" : companies
-    //     });
-    // });
-    // app.post('/customers/create', async(req,res)=>{
-    //     let {first_name, last_name, rating, company_id} = req.body;
-    //     let query = 'INSERT INTO Customers (first_name, last_name, rating, company_id) VALUES (?, ?, ?, ?)';
-    //     let bindings = [first_name, last_name, rating, company_id];
-    //     await connection.execute(query, bindings);
-    //     res.redirect('/customers');
-    // })
+    // ROUTE: Create customer
     app.get('/customers/create', async (req, res) => {
         let [companies] = await connection.execute('SELECT * from Companies');
         let [employees] = await connection.execute('SELECT * from Employees');

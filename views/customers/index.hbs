@@ -1,26 +1,8 @@
 {{#extends "base"}}
 {{#block "content"}}
-<h1>Customers</h1>
-<table class="table">
-    <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Rating</th>
-        <th>Company</th>
-    </tr>
-    {{#each customers}}
-    <tr>
-        <td>{{Customers.first_name}}</td>
-        <td>{{Customers.last_name}}</td>
-        <td>{{Customers.rating}}</td>
-        <td>{{Companies.name}}</td>
-        <td>
-            <a class="btn btn-primary" href="/customers/{{Customers.customer_id}}/edit">Edit</a>
-            <a class="btn btn-danger" href="/customers/{{Customers.customer_id}}/delete">Delete</a>
-        </td>
-        <td></td>
-    </tr>
-    {{/each}}
-</table>
+<h1>Go to Customers page</h1>
+<div class="container">
+    <a href="/customers" class="btn btn-primary">Go to Customers Page</a>
+</div>
 {{/block}}
 {{/extends}}

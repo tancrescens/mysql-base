@@ -1,0 +1,45 @@
+{{#extends "base"}}
+
+{{#block "content"}}
+<h1>Customers</h1>
+<div class="container">
+    <h2>Search</h2>
+    <form id="search-form" method="get" action="">
+        <div class="mt-3">
+            <label for="first_name">First Name</label>
+            <input id="first_name" type="text" name="first_name" class="form-control" value="{{searchTerms.first_name}}" />
+        </div>
+        <div class="mt-3">
+            <label for="last_name">Last Name</label>
+            <input id="last_name" type="text" name="last_name" class="form-control" value="{{searchTerms.last_name}}" />
+        </div>
+        <input type="submit" value="Search" class="mt-3 btn btn-primary" />
+        <input type="submit" value="Reset Search" class="mt-3 btn btn-primary" />
+
+<table class="table mt-3">
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Rating</th>
+        <th>Company</th>
+    </tr>
+    {{#each customers}}
+    <tr>
+        <td>{{Customers.first_name}}</td>
+        <td>{{Customers.last_name}}</td>
+        <td>{{Customers.rating}}</td>
+        <td>{{Companies.name}}</td>
+        <td>
+            <a class="btn btn-primary" href="/customers/{{Customers.customer_id}}/edit">Edit</a>
+            <a class="btn btn-danger" href="/customers/{{Customers.customer_id}}/delete">Delete</a>
+        </td>
+        <td></td>
+    </tr>
+    {{/each}}
+</table>
+{{/block}}
+
+{{#block "javascript"}}
+{{/block}}
+
+{{/extends}}
