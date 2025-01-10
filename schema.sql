@@ -39,7 +39,8 @@ CREATE TABLE Employees (
 CREATE TABLE Products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    description TEXT
+    description TEXT,
+    active BOOLEAN
 );
 
 -- Creating Sales Table
