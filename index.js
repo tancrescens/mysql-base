@@ -32,7 +32,7 @@ async function main() {
 
     // ROUTE: Default
     app.get('/', async (req, res) => {
-        
+
         res.render('customers/index')
     });
 
@@ -43,11 +43,11 @@ async function main() {
         const first_name = req.query.first_name;
         const last_name = req.query.last_name;
 
-        if(first_name){
+        if (first_name) {
             query += ` AND first_name LIKE ?`
             bindings.push(`%` + first_name + `%`);
         }
-        if(last_name){
+        if (last_name) {
             query += ` AND last_name LIKE ?`
             bindings.push(`%` + last_name + `%`);
         }
@@ -56,7 +56,7 @@ async function main() {
             'sql': query,
             nestTables: true
         }, bindings);
-        
+
         res.render('customers/customers', {
             'customers': customers,
             'searchTerms': req.query
@@ -79,12 +79,13 @@ async function main() {
         let [result] = await connection.execute(query, bindings);
 
         let newCustomerId = result.insertId;
-        for (let id of employee_id) {
-            let query = 'INSERT INTO EmployeeCustomer (employee_id, customer_id) VALUES (?, ?)';
-            let bindings = [id, newCustomerId];
-            await connection.execute(query, bindings);
+        if (employee_id) {
+            for (let id of employee_id) {
+                let query = 'INSERT INTO EmployeeCustomer (employee_id, customer_id) VALUES (?, ?)';
+                let bindings = [id, newCustomerId];
+                await connection.execute(query, bindings);
+            }
         }
-
         res.redirect('/customers');
     })
 
