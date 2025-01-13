@@ -6,6 +6,7 @@ const wax = require('wax-on');
 const helpers = require('handlebars-helpers');
 const { createConnection } = require('mysql2/promise');
 
+
 let app = express();
 
 app.set('view engine', 'hbs');
